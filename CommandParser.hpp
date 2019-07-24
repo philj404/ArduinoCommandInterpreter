@@ -26,7 +26,8 @@ class CommandParser {
     int report(const char * message, int errorCode);
     static const char BUFSIZE = 88;
     static const char MAXARGS = 10;
-    char buffer[BUFSIZE];
+    char linebuffer[BUFSIZE];
+    int inptr;
 
     Command * first;
 };

@@ -48,11 +48,54 @@ int CommandParser::executeIfInput(void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// Arduino serial monitor appears to 'cook' lines before sending them
+// to output, so some of this is overkill.
+// But for serial terminals, backspace would be useful.
+//
 bool CommandParser::prepInput(void)
 {
   bool bufferReady = false;
 
-  return report("MISSING CODE! executeIfInput() should get some input", -1);
+  int c = Serial.read();
+  switch (c)
+  {
+    case -1: // No character present; don't do anything.
+      break;
+
+    case 127: // DEL
+    case '\b':
+      // Destructive backspace: remove last character
+      if (inptr > 0) {
+        Serial.print("\010 \010");  // "\b \b"
+        linebuffer[--inptr] = 0;
+      }
+      break;
+
+    case 0x12: //CTRL('R')
+      //Ctrl-R retypes the line
+      Serial.print("\r\n");
+      Serial.print(linebuffer);
+      break;
+
+    case 0x15: //CTRL('U')
+      //Ctrl-U deletes the entire line and starts over.
+      Serial.println("XXX");
+      resetBuffer();
+      break;
+
+    //case '\r':
+    case '\n':
+      // line is complete
+      Serial.println();     // Echo newline too.
+      bufferReady = true;
+      break;
+
+    default:
+      // Otherwise, echo the character and put it into the buffer
+      linebuffer[inptr++] = c;
+      Serial.write(c);
+      break;
+  }
 
   return bufferReady; // not ready; try again later
 }
@@ -60,34 +103,59 @@ bool CommandParser::prepInput(void)
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(const char commandString[])
 {
-  strncpy(buffer, commandString, BUFSIZE);
+  strncpy(linebuffer, commandString, BUFSIZE);
   execute();
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//void printBuffer(const char * buf, int size)
+//{
+//  Serial.println("Array:");
+//
+//  for (int i = 0; i < size; i++)
+//  {
+//    auto c = buf[i];
+//    Serial.print(i);
+//    Serial.print(": ");
+//    Serial.print( (int) c, HEX);
+//    Serial.print(" ");
+//    if (isGraph(c) || isSpace(c))
+//    {
+//      Serial.print(" '");
+//      Serial.print(c);
+//      Serial.print("' ");
+//    }
+//    Serial.println();
+//  }
+//}
 
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(void)
 {
   char * argv[MAXARGS] = {0};
-  buffer[BUFSIZE - 1] = '\0'; // play it safe
+  linebuffer[BUFSIZE - 1] = '\0'; // play it safe
   int argc = 0;
 
   char * rest = NULL;
-  //auto b = buffer;
+  const char * whitespace = " \t\r\n";
 
-  char * commandName = strtok_r(buffer, " \t", &rest);
+  //printBuffer(linebuffer, BUFSIZE);
+
+  char * commandName = strtok_r(linebuffer, whitespace, &rest);
   if (!commandName)
   {
     return report("could not parse any arguments", -1);
   }
   argv[argc++] = commandName;
 
-  for ( ; argc < MAXARGS; argc++)
+  for ( ; argc < MAXARGS; )
   {
-    char * anArg = strtok_r(0, " \t", &rest);
+    char * anArg = strtok_r(0, whitespace, &rest);
     if (anArg) {
       argv[argc++] = anArg;
     } else {
       // no more arguments
+      //printBuffer(linebuffer, BUFSIZE); 
       return execute(argc, argv);
     }
   }
@@ -98,10 +166,21 @@ int CommandParser::execute(void)
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(int argc, char **argv)
 {
+  //  Serial.print(argc);
+  //  Serial.print(" arguments. Command is: ");
+  //  for (int i = 0; i < argc; i++)
+  //  {
+  //    Serial.print(".");
+  //    Serial.print(argv[i]);
+  //    Serial.print(". ");
+  //  }
+  //  Serial.println();
 
   for ( Command * aCmd = first; aCmd != NULL; aCmd = aCmd->next) {
     if (strncmp(argv[0], aCmd->name, BUFSIZE) == 0) {
-      return aCmd->execute(argc, argv);
+      auto retval = aCmd->execute(argc, argv);
+      resetBuffer();
+      return retval;
     }
   }
   return report("could not find command", -1);
@@ -124,8 +203,6 @@ int CommandParser::report(const char * message, int errorCode)
 //////////////////////////////////////////////////////////////////////////////
 void CommandParser::resetBuffer(void)
 {
-  for (int i = 0; i < BUFSIZE; i++)
-  {
-    buffer[i] = '\0';
-  }
+  memset(linebuffer, 0, sizeof(linebuffer));
+  inptr = 0;
 }

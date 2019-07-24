@@ -16,6 +16,7 @@ void setup() {
 
   shell->add("echo", echo);
 
+  Serial.println("Ready.");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,11 +25,11 @@ void toggleLED_nb()
 {
   static unsigned long nextToggle = 0;
   unsigned long interval = 1000;  // millisec
-  if(millis() > nextToggle)
+  if (millis() > nextToggle)
   {
     // toggle
     digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    nextToggle = millis()+ interval;
+    nextToggle = millis() + interval; // next time to toggle
   }
 }
 

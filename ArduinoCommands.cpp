@@ -58,7 +58,7 @@ const char * reverseLookup(int aVal, const lookupVals entries[])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const lookupVals modes[] = {
+const lookupVals PROGMEM modes[] = {
   //{"input", INPUT},
   {"output", OUTPUT},
   {"pullup", INPUT_PULLUP},
@@ -107,6 +107,11 @@ int analogWrite(int argc, char **argv)
       return failMsg(argv[0], -1, "bad analog output pin");
     }
     auto val = atoi(argv[2]);
+    auto cval = constrain(val, 0, 255);
+    if (val != cval)
+    {
+      return failMsg(argv[0], -1, "analog output out of range");
+    }
 
     analogWrite(pin, val);
     return EXIT_SUCCESS;
@@ -116,7 +121,7 @@ int analogWrite(int argc, char **argv)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const lookupVals digLevels[] = {
+const lookupVals PROGMEM digLevels[] = {
   {"high", HIGH},
   {NULL, LOW} // default
 };
@@ -129,7 +134,7 @@ int digitalWrite(int argc, char **argv)
     if (pin < 0 || pin > NUM_DIGITAL_PINS)
     {
       return failMsg(argv[0], -1, "bad digital pin");
-    }   
+    }
     auto level = lookup(argv[2], digLevels);
 
     digitalWrite(pin, level);
@@ -148,7 +153,7 @@ int digitalRead(int argc, char **argv)
     if (pin < 0 || pin > NUM_DIGITAL_PINS)
     {
       return failMsg(argv[0], -1, "bad digital pin");
-    }   
+    }
     auto val = digitalRead(pin);
     Serial.print(val);
     Serial.print(" ");

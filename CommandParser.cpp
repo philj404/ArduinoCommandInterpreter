@@ -50,6 +50,7 @@ int CommandParser::executeIfInput(void)
 //////////////////////////////////////////////////////////////////////////////
 // Arduino serial monitor appears to 'cook' lines before sending them
 // to output, so some of this is overkill.
+//
 // But for serial terminals, backspace would be useful.
 //
 bool CommandParser::prepInput(void)
@@ -62,6 +63,8 @@ bool CommandParser::prepInput(void)
     case -1: // No character present; don't do anything.
       break;
 
+    // Line editing characters
+    // TODO test with a 'raw' terminal
     case 127: // DEL
     case '\b':
       // Destructive backspace: remove last character

@@ -177,7 +177,7 @@ int CommandParser::execute(int argc, char **argv)
   //  Serial.println();
 
   for ( Command * aCmd = first; aCmd != NULL; aCmd = aCmd->next) {
-    if (strncmp(argv[0], aCmd->name, BUFSIZE) == 0) {
+    if (strncasecmp(argv[0], aCmd->name, BUFSIZE) == 0) {
       auto retval = aCmd->execute(argc, argv);
       resetBuffer();
       return retval;

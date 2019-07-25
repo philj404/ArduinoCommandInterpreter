@@ -37,3 +37,8 @@ extern CommandParser *shell;
 
 //simple example command
 extern int echo(int argc, char **argv);
+extern int setPinMode(int argc, char **argv);
+extern int analogRead(int argc, char **argv);
+extern int analogWrite(int argc, char **argv);
+extern int digitalRead(int argc, char **argv);
+extern int digitalWrite(int argc, char **argv);

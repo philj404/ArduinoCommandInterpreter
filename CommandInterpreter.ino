@@ -15,6 +15,11 @@ void setup() {
   shell = new CommandParser();
 
   shell->add("echo", echo);
+  shell->add("setpinmode", setPinMode);
+  shell->add("digitalwrite", digitalWrite);
+  shell->add("digitalread", digitalRead);
+  shell->add("analogread", analogRead);
+  shell->add("analogwrite", analogWrite);
 
   Serial.println("Ready.");
 }

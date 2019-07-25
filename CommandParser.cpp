@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "CommandParser.hpp"
+#include "Streaming.h"
 
 CommandParser * shell = NULL;
 
@@ -106,6 +107,7 @@ bool CommandParser::prepInput(void)
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(const char commandString[])
 {
+  // overwrites anything in linebuffer; hope you don't need it!
   strncpy(linebuffer, commandString, BUFSIZE);
   execute();
 }
@@ -113,22 +115,17 @@ int CommandParser::execute(const char commandString[])
 ////////////////////////////////////////////////////////////////////////////////
 //void printBuffer(const char * buf, int size)
 //{
-//  Serial.println("Array:");
+//  Serial << "Array:" << endl;
 //
 //  for (int i = 0; i < size; i++)
 //  {
 //    auto c = buf[i];
-//    Serial.print(i);
-//    Serial.print(": ");
-//    Serial.print( (int) c, HEX);
-//    Serial.print(" ");
+//    Serial << i << ": 0x" << _HEX( c) << " ";
 //    if (isGraph(c) || isSpace(c))
 //    {
-//      Serial.print(" '");
-//      Serial.print(c);
-//      Serial.print("' ");
+//      Serial << " '" << c << "' ";
 //    }
-//    Serial.println();
+//    Serial << endl;
 //  }
 //}
 
@@ -158,7 +155,7 @@ int CommandParser::execute(void)
       argv[argc++] = anArg;
     } else {
       // no more arguments
-      //printBuffer(linebuffer, BUFSIZE); 
+      //printBuffer(linebuffer, BUFSIZE);
       return execute(argc, argv);
     }
   }
@@ -169,15 +166,12 @@ int CommandParser::execute(void)
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(int argc, char **argv)
 {
-  //  Serial.print(argc);
-  //  Serial.print(" arguments. Command is: ");
+  //  Serial << argc << " arguments. Command is: ";
   //  for (int i = 0; i < argc; i++)
   //  {
-  //    Serial.print(".");
-  //    Serial.print(argv[i]);
-  //    Serial.print(". ");
+  //    Serial << "\"" << argv[i] << "\" ";
   //  }
-  //  Serial.println();
+  //  Serial << endl;
 
   for ( Command * aCmd = first; aCmd != NULL; aCmd = aCmd->next) {
     if (strncasecmp(argv[0], aCmd->name, BUFSIZE) == 0) {

@@ -165,3 +165,14 @@ int digitalRead(int argc, char **argv)
 
   return failMsg(argv[0], -1, "bad arg count");
 }
+
+////////////////////////////////////////////////////////////////////////////////
+int addArduinoCommands(CommandParser * shell)
+{
+  shell->add("setpinmode", setPinMode);
+  shell->add("digitalwrite", digitalWrite);
+  shell->add("digitalread", digitalRead);
+  shell->add("analogread", analogRead);
+  shell->add("analogwrite", analogWrite);
+  return EXIT_SUCCESS;
+}

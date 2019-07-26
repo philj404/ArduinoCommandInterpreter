@@ -14,12 +14,10 @@ void setup() {
   }
   shell = new CommandParser();
 
+  //example
   shell->add("echo", echo);
-  shell->add("setpinmode", setPinMode);
-  shell->add("digitalwrite", digitalWrite);
-  shell->add("digitalread", digitalRead);
-  shell->add("analogread", analogRead);
-  shell->add("analogwrite", analogWrite);
+
+  addArduinoCommands(shell);
 
   Serial.println("Ready.");
 }

@@ -5,9 +5,10 @@
 CommandParser * shell = NULL;
 
 //
-CommandParser::Command * CommandParser::first = NULL;
+CommandParser::Command * CommandParser::firstCommand = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
+// associate a named command with the function to call.
 class CommandParser::Command {
   public:
     Command(const char * n, CommandFunction f): name(n), myFunc(f) {};
@@ -27,7 +28,7 @@ CommandParser::CommandParser()
 {
   resetBuffer();
 
-  // this works because CommandParser::printHelp() is a static method.
+  // simple help.
   add("help", CommandParser::printHelp);
 };
 
@@ -35,8 +36,10 @@ CommandParser::CommandParser()
 void CommandParser::add(const char * name, CommandFunction f)
 {
   auto * cmd = new Command(name, f);
-  cmd->next = first;
-  first = cmd;
+
+  // insert in list alphabetically?
+  cmd->next = firstCommand;
+  firstCommand = cmd;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -134,19 +137,19 @@ int CommandParser::execute(const char commandString[])
 //////////////////////////////////////////////////////////////////////////////
 int CommandParser::execute(void)
 {
+  //printBuffer(linebuffer, BUFSIZE);
+
   char * argv[MAXARGS] = {0};
   linebuffer[BUFSIZE - 1] = '\0'; // play it safe
   int argc = 0;
 
   char * rest = NULL;
   const char * whitespace = " \t\r\n";
-
-  //printBuffer(linebuffer, BUFSIZE);
-
   char * commandName = strtok_r(linebuffer, whitespace, &rest);
+
   if (!commandName)
   {
-    // no arguments found.
+    // empty line; no arguments found.
     //return report("could not parse any arguments", -1);
     Serial << F("OK") << endl;
     resetBuffer();
@@ -179,7 +182,7 @@ int CommandParser::execute(int argc, char **argv)
   //  }
   //  Serial << endl;
 
-  for ( Command * aCmd = first; aCmd != NULL; aCmd = aCmd->next) {
+  for ( Command * aCmd = firstCommand; aCmd != NULL; aCmd = aCmd->next) {
     if (strncasecmp(argv[0], aCmd->name, BUFSIZE) == 0) {
       auto retval = aCmd->execute(argc, argv);
       resetBuffer();
@@ -211,10 +214,13 @@ void CommandParser::resetBuffer(void)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// CommandParser::printHelp() is a static method.
+// printHelp() can access the linked list of commands.
+//
 int CommandParser::printHelp(int argc, char **argv)
 {
   Serial << F("Commands available are:") << endl;
-  auto aCmd = first;
+  auto aCmd = firstCommand;  // first in list of commands.
   while (aCmd)
   {
     Serial << F("  ") << aCmd->name << endl;

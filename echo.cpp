@@ -18,7 +18,7 @@ int echo(int argc, char **argv)
     Serial << argv[i];
 
     if (i < lastArg)
-      Serial << " ";
+      Serial << F(" ");
   }
   Serial << endl;
 

@@ -15,6 +15,8 @@ class CommandParser {
     int executeIfInput(void);
     int execute( const char aCommandString[]);
     bool prepInput(void);
+
+    static int printHelp(int argc, char **argv);
     
     class Command;
 
@@ -29,7 +31,7 @@ class CommandParser {
     char linebuffer[BUFSIZE];
     int inptr;
 
-    Command * first;
+    static Command * first;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

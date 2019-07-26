@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include "Arduino.h"
 #include "CommandParser.hpp"
+#include "Streaming.h"
 // see Arduino.h and pins_arduino.h for useful declarations.
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -155,10 +156,9 @@ int digitalRead(int argc, char **argv)
       return failMsg(argv[0], -1, "bad digital pin");
     }
     auto val = digitalRead(pin);
-    Serial.print(val);
-    Serial.print(" ");
+    Serial << val << F(" ");
     auto valName = reverseLookup(val, digLevels);
-    Serial.println(valName);
+    Serial << valName << endl;
 
     return EXIT_SUCCESS;
   }

@@ -25,9 +25,11 @@ void setup() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// non blocking
+// non blocking LED toggle
+//
 void toggleLED_nb()
 {
+  // this should work for ~50 days (until millis() wraps)
   static unsigned long nextToggle = 0;
   unsigned long interval = 1000;  // millisec
   if (millis() > nextToggle)

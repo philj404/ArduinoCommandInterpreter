@@ -5,7 +5,7 @@
 CommandParser * shell = NULL;
 
 //
-CommandParser::Command * first = NULL;
+CommandParser::Command * CommandParser::first = NULL;
 
 ////////////////////////////////////////////////////////////////////////////////
 class CommandParser::Command {
@@ -24,9 +24,11 @@ class CommandParser::Command {
 
 ////////////////////////////////////////////////////////////////////////////////
 CommandParser::CommandParser()
-  : first(NULL)
 {
   resetBuffer();
+
+  // this works because CommandParser::printHelp() is a static method.
+  add("help", CommandParser::printHelp);
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -144,7 +146,11 @@ int CommandParser::execute(void)
   char * commandName = strtok_r(linebuffer, whitespace, &rest);
   if (!commandName)
   {
-    return report("could not parse any arguments", -1);
+    // no arguments found.
+    //return report("could not parse any arguments", -1);
+    Serial << F("OK") << endl;
+    resetBuffer();
+    return EXIT_SUCCESS;
   }
   argv[argc++] = commandName;
 
@@ -202,4 +208,16 @@ void CommandParser::resetBuffer(void)
 {
   memset(linebuffer, 0, sizeof(linebuffer));
   inptr = 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+int CommandParser::printHelp(int argc, char **argv)
+{
+  Serial << F("Commands available are:") << endl;
+  auto aCmd = first;
+  while (aCmd)
+  {
+    Serial << F("  ") << aCmd->name << endl;
+    aCmd = aCmd->next;
+  }
 }

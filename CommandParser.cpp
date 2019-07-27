@@ -202,7 +202,9 @@ int CommandParser::execute(int argc, char **argv)
       return retval;
     }
   }
-  return report("could not find command", -1);
+  Serial << F("\"") << argv[0] << F("\": ");
+
+  return report("command not found", -1);
 }
 
 //////////////////////////////////////////////////////////////////////////////

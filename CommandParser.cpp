@@ -38,8 +38,27 @@ void CommandParser::add(const char * name, CommandFunction f)
   auto * cmd = new Command(name, f);
 
   // insert in list alphabetically?
+#ifdef UNSORTED
   cmd->next = firstCommand;
   firstCommand = cmd;
+#else
+  // from stackoverflow...
+  //
+  //node* temp = new node;
+  //temp->name = nameRead;
+  //temp->id = idRead;
+
+  Command* temp2 = firstCommand;
+  Command** temp3 = &firstCommand;
+  while (temp2 != NULL && (strncasecmp(cmd->name, temp2->name, BUFSIZE) > 0) )
+  {
+    temp3 = &temp2->next;
+    temp2 = temp2->next;
+  }
+  *temp3 = cmd;
+  cmd->next = temp2;
+#endif
+
 }
 
 //////////////////////////////////////////////////////////////////////////////

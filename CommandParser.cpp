@@ -35,11 +35,20 @@ CommandParser::CommandParser()
 //////////////////////////////////////////////////////////////////////////////
 void CommandParser::add(const char * name, CommandFunction f)
 {
-  auto * cmd = new Command(name, f);
+  auto * newCmd = new Command(name, f);
 
-  // insert in list alphabetically?
-  cmd->next = firstCommand;
-  firstCommand = cmd;
+  // insert in list alphabetically
+  // from stackoverflow...
+
+  Command* temp2 = firstCommand;
+  Command** temp3 = &firstCommand;
+  while (temp2 != NULL && (strncasecmp(newCmd->name, temp2->name, BUFSIZE) > 0) )
+  {
+    temp3 = &temp2->next;
+    temp2 = temp2->next;
+  }
+  *temp3 = newCmd;
+  newCmd->next = temp2;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -193,7 +202,9 @@ int CommandParser::execute(int argc, char **argv)
       return retval;
     }
   }
-  return report("could not find command", -1);
+  Serial << F("\"") << argv[0] << F("\": ");
+
+  return report("command not found", -1);
 }
 
 //////////////////////////////////////////////////////////////////////////////

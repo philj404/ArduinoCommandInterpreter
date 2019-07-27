@@ -61,7 +61,7 @@ int CommandParser::executeIfInput(void)
 //
 bool CommandParser::prepInput(void)
 {
-  bool bufferReady = false;
+  bool bufferReady = false; // assume not ready
 
   int c = Serial.read();
   switch (c)
@@ -70,11 +70,11 @@ bool CommandParser::prepInput(void)
       break;
 
     // Line editing characters
-    case 127: // DEL
-    case '\b':
+    case 127: // DEL delete key
+    case '\b':  // CTRL(H) backspace
       // Destructive backspace: remove last character
       if (inptr > 0) {
-        Serial.print("\010 \010");  // "\b \b"
+        Serial.print("\010 \010");  // "\b \b" -- remove char in raw UI
         linebuffer[--inptr] = 0;
       }
       break;
@@ -91,24 +91,26 @@ bool CommandParser::prepInput(void)
       resetBuffer();
       break;
 
-    case '\r':  // raw input only sends "return" (or "Enter")
+    case '\r':  //CTRL('M') carriage return (or "Enter" key)
+      // raw input only sends "return" for the keypress
       // line is complete
       Serial.println();     // Echo newline too.
       bufferReady = true;
       break;
 
-    case '\n':
-      // ignore newline as 'raw' terminals may not send it, but Serial Monitor always will...
+    case '\n':  //CTRL('J') linefeed
+      // ignore newline as 'raw' terminals may not send it.
+      // Serial Monitor sends a "\r\n" pair by default
       break;
 
     default:
-      // Otherwise, echo the character and put it into the buffer
+      // Otherwise, echo the character and append it to the buffer
       linebuffer[inptr++] = c;
       Serial.write(c);
       break;
   }
 
-  return bufferReady; // not ready; try again later
+  return bufferReady;
 }
 
 //////////////////////////////////////////////////////////////////////////////

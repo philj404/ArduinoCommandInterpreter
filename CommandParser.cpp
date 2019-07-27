@@ -70,7 +70,6 @@ bool CommandParser::prepInput(void)
       break;
 
     // Line editing characters
-    // TODO test with a 'raw' terminal
     case 127: // DEL
     case '\b':
       // Destructive backspace: remove last character
@@ -92,11 +91,14 @@ bool CommandParser::prepInput(void)
       resetBuffer();
       break;
 
-    //case '\r':
-    case '\n':
+    case '\r':  // raw input only sends "return" (or "Enter")
       // line is complete
       Serial.println();     // Echo newline too.
       bufferReady = true;
+      break;
+
+    case '\n':
+      // ignore newline as 'raw' terminals may not send it, but Serial Monitor always will...
       break;
 
     default:

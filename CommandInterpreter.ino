@@ -1,6 +1,6 @@
-#include "CommandParser.hpp"
+// basic example testing of the command parser.
 
-////////////////////////////////////////////////////////////////////////////////
+#include "CommandParser.hpp"
 
 ////////////////////////////////////////////////////////////////////////////////
 void setup() {
@@ -22,23 +22,8 @@ void setup() {
   Serial.println("Ready.");
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // non blocking LED toggle
-//
-void toggleLED_nb()
-{
-  // this should work for ~50 days (until millis() wraps)
-  static unsigned long nextToggle = 0;
-  unsigned long interval = 1000;  // millisec
-  if (millis() > nextToggle)
-  {
-    // toggle
-    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-    nextToggle = millis() + interval; // next time to toggle
-  }
-}
-
-
+extern void toggleLED_nb(void);
 
 ////////////////////////////////////////////////////////////////////////////////
 void loop() {

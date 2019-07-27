@@ -3,6 +3,9 @@
 // echo
 // simple version of Unix style 'echo'
 //
+// example:  "echo Hello world"
+//  prints:  "Hello world\n" to serial monitor.
+//
 ////////////////////////////////////////////////////////////////////////////////
 //
 #include "Arduino.h"

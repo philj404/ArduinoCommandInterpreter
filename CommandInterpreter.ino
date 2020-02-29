@@ -8,7 +8,8 @@ void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
 
-  Serial.begin(9600);
+  //Serial.begin(9600); older default bit rate
+  Serial.begin(115200);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
@@ -33,5 +34,5 @@ void loop() {
   shell->executeIfInput();
 
   // show loop() is still running
-  toggleLED_nb();
+  //toggleLED_nb();
 }

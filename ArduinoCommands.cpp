@@ -46,19 +46,6 @@ int lookup(const char * aName, const lookupVals entries[])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const char * reverseLookup(int aVal, const lookupVals entries[])
-{
-  int i = 0;
-  for (; entries[i].name; i++)
-  {
-    if (aVal == entries[i].val) {
-      break;
-    }
-  }
-  return entries[i].val;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 const lookupVals PROGMEM modes[] = {
   //{"input", INPUT},
   {"output", OUTPUT},
@@ -122,11 +109,6 @@ int analogWrite(int argc, char **argv)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-const lookupVals PROGMEM digLevels[] = {
-  {"high", HIGH},
-  {NULL, LOW} // default
-};
-////////////////////////////////////////////////////////////////////////////////
 int digitalWrite(int argc, char **argv)
 {
   if (argc == 3)
@@ -136,7 +118,8 @@ int digitalWrite(int argc, char **argv)
     {
       return failMsg(argv[0], -1, "bad digital pin");
     }
-    auto level = lookup(argv[2], digLevels);
+
+    auto level = atoi(argv[2]);
 
     digitalWrite(pin, level);
     return EXIT_SUCCESS;
@@ -156,9 +139,7 @@ int digitalRead(int argc, char **argv)
       return failMsg(argv[0], -1, "bad digital pin");
     }
     auto val = digitalRead(pin);
-    Serial << val << F(" ");
-    auto valName = reverseLookup(val, digLevels);
-    Serial << valName << endl;
+    Serial << val << endl;
 
     return EXIT_SUCCESS;
   }

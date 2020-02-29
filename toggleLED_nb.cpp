@@ -8,7 +8,7 @@ void toggleLED_nb(void)
 {
   // this should work for ~50 days (until millis() wraps)
   static unsigned long nextToggle = 0;
-  const unsigned long interval = 1000;  // millisec
+  const unsigned long interval = 2000;  // millisec
   if (millis() > nextToggle)
   {
     // toggle

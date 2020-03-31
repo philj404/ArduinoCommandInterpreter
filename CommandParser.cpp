@@ -101,6 +101,7 @@ bool CommandParser::prepInput(void)
       break;
 
     case '\r':  //CTRL('M') carriage return (or "Enter" key)
+    case ';':  // semicolon because it's hard to send 'return' with Android phones.
       // raw input only sends "return" for the keypress
       // line is complete
       Serial.println();     // Echo newline too.
